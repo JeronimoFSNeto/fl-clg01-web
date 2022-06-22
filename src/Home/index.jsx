@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HeartIcon } from "@heroicons/react/outline"
+import axios from 'axios'
+
 const MAX_TWEET_CHAR = 140
 
 function TweetForm() {
@@ -8,7 +10,7 @@ function TweetForm() {
   function changeText(e){
     setText(e.target.value)
   }
-  console.log(text)
+  
   return (
     <div className="border-b border-silver p-4 space-y-6">
       <div className="flex space-x-5">
@@ -22,20 +24,19 @@ function TweetForm() {
           value={text}
           placeholder="O que está acontecendo?"
           className=" bg-transparent outline-none disabled:opacity-50"
-          onChange={changeText}      
-          //disabled={true}
+          onChange={changeText}                
           />
 
           <div className="flex justify-end items-center space-x-3">
             <span className="text-sm">
-
-              {/* <span>0</span> / <span className="text-birdBlue">140</span> */}
-              
               <span>{text.length}</span> / <span className="text-birdBlue">{MAX_TWEET_CHAR}</span>
             </span>
-            <button className="bg-birdBlue px-5 py-2 rounded-full disabled:opacity-50"
-            disabled={text.length > MAX_TWEET_CHAR}
-            >Tweet</button>
+            <button 
+              className="bg-birdBlue px-5 py-2 rounded-full disabled:opacity-50"
+              disabled={text.length > MAX_TWEET_CHAR}
+            >
+              Tweet
+            </button>
           </div>
       </form>
     </div>
@@ -49,11 +50,13 @@ function Tweet({ name, username, avatar, children }) {
         <img src={avatar} />
       </div>
       <div className="space-y-1">
-        <span className="font-bold text-sm">{name}</span>{" "}
+        <span className="font-bold text-sm">{name}</span>{' '}
         <span className="text-sm text-silver">@{username}</span>
+
         <p>{children}</p>
+
         <div className="flex space-x-1 text-silver text-sm items-center">
-          <HeartIcon className="w-6 stroke-1 stroke-silver" />
+          <HeartIcon className="w-6 stroke-1" />
           <span>1.2k</span>
         </div>
       </div>
@@ -61,14 +64,13 @@ function Tweet({ name, username, avatar, children }) {
   )
 }
 
-export function Home() {
-  const token =''
+export function Home({ loggedInUser }) {  
   const [data, setData] = useState([])
 
   async function getData() {
     const res = await axios.get('http://localhost:9901/tweets', {
       headers: {
-        // 'authorization': `Bearer ${token}`
+        'authorization': `Bearer ${loggedInUser.accessToken}`
       }
     })
     setData(res.data)
@@ -82,7 +84,7 @@ export function Home() {
       <TweetForm />
       <div>
         {data.length && data.map(tweet => (
-          <Tweet name={tweet.user.name} username={tweet.user.username} avatar="/src/avatar.png">
+          <Tweet key={tweet.id} name={tweet.user.name} username={tweet.user.username} avatar="/src/avatar.png">
             {tweet.text}
           </Tweet>
         ))}
