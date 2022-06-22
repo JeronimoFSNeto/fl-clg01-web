@@ -1,0 +1,15 @@
+/*lembrando que o tailwind já faz o reset css automaticamente*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root{
+	height:100%;
+}
+
+body{
+	background: theme('colors.backgroundColor');
+	color: theme('colors.textColor');
+}
+
+
